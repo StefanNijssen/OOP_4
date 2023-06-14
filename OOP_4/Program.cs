@@ -8,8 +8,8 @@ namespace ConsoleApp4
 {
     public class Battle
     {
-        private Trainer trainer1;
-        private Trainer trainer2;
+        public Trainer trainer1;
+        public Trainer trainer2;
 
         public Battle(Trainer trainer1, Trainer trainer2)
         {
@@ -140,7 +140,7 @@ namespace ConsoleApp4
     }
 
 
-    class Pokeball
+    public class Pokeball
     {
         public bool IsOpen;
         public List<Pokemon> EnclosedPokemons;
@@ -204,7 +204,7 @@ namespace ConsoleApp4
         }
     }
 
-    class Trainer
+    public class Trainer
     {
         public string Name;
         public List<Pokeball> Belt;
@@ -256,7 +256,7 @@ namespace ConsoleApp4
 
             Console.WriteLine("De geselecteerde Pokeball kan niet worden gegooid.");
         }
-        public void ReturnPokemon()
+        public bool ReturnPokemon()
         {
             bool anyPokemonReturned = false;
 
@@ -277,10 +277,11 @@ namespace ConsoleApp4
             {
                 Console.WriteLine("There is no open pokeball to return.");
             }
+
+            return anyPokemonReturned;
         }
     }
-
-    public class Program
+        public class Program
     {
         public static void Main(string[] args)
         {
