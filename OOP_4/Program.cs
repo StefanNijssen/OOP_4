@@ -260,16 +260,23 @@ namespace ConsoleApp4
         {
             bool anyPokemonReturned = false;
 
-            foreach (Pokeball pokeball in Belt)
+            for (int i = Belt.Count - 1; i >= 0; i--)
             {
+                Pokeball pokeball = Belt[i];
+
                 if (pokeball.IsOpen && pokeball.EnclosedPokemons.Count > 0)
                 {
                     pokeball.Return();
+
                     foreach (Pokemon pokemon in pokeball.EnclosedPokemons)
                     {
                         Console.WriteLine(pokemon.name + " goes back to Trainer " + Name + "'s pokeball.");
                     }
+
                     anyPokemonReturned = true;
+
+                    // Remove the returned Pokeball from the belt
+                    Belt.RemoveAt(i);
                 }
             }
 
@@ -300,45 +307,50 @@ namespace ConsoleApp4
                 Console.WriteLine("Druk op Enter om het spel te starten...");
                 Console.ReadLine();
 
-                bool gameRunning = true;
-                int i = 0;
-                while (gameRunning)
+                Battle battle = new Battle(trainer1, trainer2);
+
+                // Start het gevecht
+                battle.Start();
+            
+            /*bool gameRunning = true;
+            int i = 0;
+            while (gameRunning)
+            {
+                Console.WriteLine("===== Trainer 1 =====");
+                trainer1.ThrowPokeball(i);
+                Console.WriteLine();
+
+                Console.WriteLine("===== Trainer 2 =====");
+                trainer2.ThrowPokeball(i);
+                Console.WriteLine();
+
+                Console.WriteLine("Wil je doorgaan met het spel? (ja/nee)");
+                string continueResponse = Console.ReadLine();
+                if (continueResponse.ToLower() == "ja")
                 {
                     Console.WriteLine("===== Trainer 1 =====");
-                    trainer1.ThrowPokeball(i);
+                    trainer1.ReturnPokemon();
                     Console.WriteLine();
 
                     Console.WriteLine("===== Trainer 2 =====");
-                    trainer2.ThrowPokeball(i);
+                    trainer2.ReturnPokemon();
                     Console.WriteLine();
-
-                    Console.WriteLine("Wil je doorgaan met het spel? (ja/nee)");
-                    string continueResponse = Console.ReadLine();
-                    if (continueResponse.ToLower() == "ja")
-                    {
-                        Console.WriteLine("===== Trainer 1 =====");
-                        trainer1.ReturnPokemon();
-                        Console.WriteLine();
-
-                        Console.WriteLine("===== Trainer 2 =====");
-                        trainer2.ReturnPokemon();
-                        Console.WriteLine();
-                    }
-                    else
-                    {
-                        gameRunning = false;
-                    }
-
-                    Console.WriteLine("Wil je doorgaan met het spel? (ja/nee)");
-                    continueResponse = Console.ReadLine();
-                    if (continueResponse.ToLower() == "nee")
-                    {
-                        gameRunning = false;
-                    }
-                    i++;
+                }
+                else
+                {
+                    gameRunning = false;
                 }
 
-                Console.WriteLine("Wil je het spel opnieuw spelen? (ja/nee)");
+                Console.WriteLine("Wil je doorgaan met het spel? (ja/nee)");
+                continueResponse = Console.ReadLine();
+                if (continueResponse.ToLower() == "nee")
+                {
+                    gameRunning = false;
+                }
+                i++;
+            }*/
+
+            Console.WriteLine("Wil je het spel opnieuw spelen? (ja/nee)");
                 string replayResponse = Console.ReadLine();
                 if (replayResponse.ToLower() != "ja")
                 {
