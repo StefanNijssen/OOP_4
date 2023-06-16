@@ -20,6 +20,7 @@ namespace ConsoleApp4
         public void Start()
         {
             int round = 1;
+            Random random = new Random();
 
             while (trainer1.Belt.Count > 0 && trainer2.Belt.Count > 0)
             {
@@ -32,7 +33,7 @@ namespace ConsoleApp4
                 {
                     Console.WriteLine("Trainer " + trainer.Name + " throws a Pokéball!");
 
-                    int pokeballIndex = new Random().Next(trainer.Belt.Count);
+                    int pokeballIndex = random.Next(trainer.Belt.Count);
                     trainer.ThrowPokeball(pokeballIndex);
 
                     anyPokemonReturned |= trainer.ReturnPokemon();
@@ -44,6 +45,9 @@ namespace ConsoleApp4
                 }
 
                 Console.WriteLine();
+
+                DetermineRoundWinner();
+
                 round++;
             }
 
@@ -51,6 +55,48 @@ namespace ConsoleApp4
             Console.WriteLine();
 
             DetermineWinner();
+        }
+
+        private void DetermineRoundWinner()
+        {
+            Pokemon pokemon1 = GetActivePokemon(trainer1);
+            Pokemon pokemon2 = GetActivePokemon(trainer2);
+
+            if (pokemon1 != null && pokemon2 != null)
+            {
+                if (pokemon1.strength == pokemon2.name)
+                {
+                    Console.WriteLine("Trainer " + trainer1.Name + "'s " + pokemon1.name + " wins the round!");
+                    ReturnLosingPokemon(trainer2);
+                }
+                else if (pokemon2.strength == pokemon1.name)
+                {
+                    Console.WriteLine("Trainer " + trainer2.Name + "'s " + pokemon2.name + " wins the round!");
+                    ReturnLosingPokemon(trainer1);
+                }
+                else if (pokemon1.weakness == pokemon2.name)
+                {
+                    Console.WriteLine("Trainer " + trainer1.Name + "'s " + pokemon1.name + " wins the round!");
+                    ReturnLosingPokemon(trainer2);
+                }
+                else if (pokemon2.weakness == pokemon1.name)
+                {
+                    Console.WriteLine("Trainer " + trainer2.Name + "'s " + pokemon2.name + " wins the round!");
+                    ReturnLosingPokemon(trainer1);
+                }
+                else
+                {
+                    Console.WriteLine("The round ends in a draw!");
+                    ReturnActivePokemon(trainer1);
+                    ReturnActivePokemon(trainer2);
+                }
+            }
+            else
+            {
+                Console.WriteLine("The round ends in a draw!");
+            }
+
+            Console.WriteLine();
         }
 
         private void DetermineWinner()
@@ -86,8 +132,47 @@ namespace ConsoleApp4
 
             return count;
         }
+
+        private Pokemon GetActivePokemon(Trainer trainer)
+        {
+            foreach (Pokeball pokeball in trainer.Belt)
+            {
+                if (!pokeball.IsOpen && pokeball.EnclosedPokemons.Count > 0)
+                {
+                    return pokeball.EnclosedPokemons[0];
+                }
+            }
+
+            return null;
+        }
+
+        private void ReturnLosingPokemon(Trainer trainer)
+        {
+            foreach (Pokeball pokeball in trainer.Belt)
+            {
+                if (!pokeball.IsOpen && pokeball.EnclosedPokemons.Count > 0)
+                {
+                    pokeball.Return();
+                    Console.WriteLine(pokeball.EnclosedPokemons[0].name + " goes back to Trainer " + trainer.Name + "'s Pokeball.");
+                    break;
+                }
+            }
+        }
+
+        private void ReturnActivePokemon(Trainer trainer)
+        {
+            foreach (Pokeball pokeball in trainer.Belt)
+            {
+                if (pokeball.IsOpen && pokeball.EnclosedPokemons.Count > 0)
+                {
+                    pokeball.Return();
+                    Console.WriteLine(pokeball.EnclosedPokemons[0].name + " goes back to Trainer " + trainer.Name + "'s Pokeball.");
+                    break;
+                }
+            }
+        }
     }
-    public abstract class Pokemon
+        public abstract class Pokemon
     {
         public string name;
         public string strength;
