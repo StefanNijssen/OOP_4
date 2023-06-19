@@ -1,450 +1,309 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
-namespace ConsoleApp4
+public abstract class Pokemon
 {
-    public class Battle
+    public string Name;
+    public string Strength;
+    public string Weakness;
+
+    protected Pokemon(string name, string strength, string weakness)
     {
-        public Trainer trainer1;
-        public Trainer trainer2;
-
-        public Battle(Trainer trainer1, Trainer trainer2)
-        {
-            this.trainer1 = trainer1;
-            this.trainer2 = trainer2;
-        }
-
-        public void Start()
-        {
-            int round = 1;
-            Random random = new Random();
-
-            while (trainer1.Belt.Count > 0 && trainer2.Belt.Count > 0)
-            {
-                Console.WriteLine("Round " + round);
-                Console.WriteLine();
-
-                bool anyPokemonReturned = false;
-
-                foreach (Trainer trainer in new[] { trainer1, trainer2 })
-                {
-                    Console.WriteLine("Trainer " + trainer.Name + " throws a Pokéball!");
-
-                    int pokeballIndex = random.Next(trainer.Belt.Count);
-                    trainer.ThrowPokeball(pokeballIndex);
-
-                    anyPokemonReturned |= trainer.ReturnPokemon();
-                }
-
-                if (!anyPokemonReturned)
-                {
-                    Console.WriteLine("No Pokémon were returned.");
-                }
-
-                Console.WriteLine();
-
-                DetermineRoundWinner();
-
-                round++;
-            }
-
-            Console.WriteLine("Battle has ended!");
-            Console.WriteLine();
-
-            DetermineWinner();
-        }
-
-        private void DetermineRoundWinner()
-        {
-            Pokemon pokemon1 = GetActivePokemon(trainer1);
-            Pokemon pokemon2 = GetActivePokemon(trainer2);
-
-            if (pokemon1 != null && pokemon2 != null)
-            {
-                if (pokemon1.strength == pokemon2.name)
-                {
-                    Console.WriteLine("Trainer " + trainer1.Name + "'s " + pokemon1.name + " wins the round!");
-                    ReturnLosingPokemon(trainer2);
-                }
-                else if (pokemon2.strength == pokemon1.name)
-                {
-                    Console.WriteLine("Trainer " + trainer2.Name + "'s " + pokemon2.name + " wins the round!");
-                    ReturnLosingPokemon(trainer1);
-                }
-                else if (pokemon1.weakness == pokemon2.name)
-                {
-                    Console.WriteLine("Trainer " + trainer1.Name + "'s " + pokemon1.name + " wins the round!");
-                    ReturnLosingPokemon(trainer2);
-                }
-                else if (pokemon2.weakness == pokemon1.name)
-                {
-                    Console.WriteLine("Trainer " + trainer2.Name + "'s " + pokemon2.name + " wins the round!");
-                    ReturnLosingPokemon(trainer1);
-                }
-                else
-                {
-                    Console.WriteLine("The round ends in a draw!");
-                    ReturnActivePokemon(trainer1);
-                    ReturnActivePokemon(trainer2);
-                }
-            }
-            else
-            {
-                Console.WriteLine("The round ends in a draw!");
-            }
-
-            Console.WriteLine();
-        }
-
-        private void DetermineWinner()
-        {
-            int trainer1PokemonCount = CountRemainingPokemons(trainer1);
-            int trainer2PokemonCount = CountRemainingPokemons(trainer2);
-
-            if (trainer1PokemonCount > trainer2PokemonCount)
-            {
-                Console.WriteLine("Trainer " + trainer1.Name + " wins the battle!");
-            }
-            else if (trainer2PokemonCount > trainer1PokemonCount)
-            {
-                Console.WriteLine("Trainer " + trainer2.Name + " wins the battle!");
-            }
-            else
-            {
-                Console.WriteLine("The battle ends in a draw!");
-            }
-        }
-
-        private int CountRemainingPokemons(Trainer trainer)
-        {
-            int count = 0;
-
-            foreach (Pokeball pokeball in trainer.Belt)
-            {
-                if (!pokeball.IsOpen && pokeball.EnclosedPokemons.Count > 0)
-                {
-                    count += pokeball.EnclosedPokemons.Count;
-                }
-            }
-
-            return count;
-        }
-
-        private Pokemon GetActivePokemon(Trainer trainer)
-        {
-            foreach (Pokeball pokeball in trainer.Belt)
-            {
-                if (!pokeball.IsOpen && pokeball.EnclosedPokemons.Count > 0)
-                {
-                    return pokeball.EnclosedPokemons[0];
-                }
-            }
-
-            return null;
-        }
-
-        private void ReturnLosingPokemon(Trainer trainer)
-        {
-            foreach (Pokeball pokeball in trainer.Belt)
-            {
-                if (!pokeball.IsOpen && pokeball.EnclosedPokemons.Count > 0)
-                {
-                    pokeball.Return();
-                    Console.WriteLine(pokeball.EnclosedPokemons[0].name + " goes back to Trainer " + trainer.Name + "'s Pokeball.");
-                    break;
-                }
-            }
-        }
-
-        private void ReturnActivePokemon(Trainer trainer)
-        {
-            foreach (Pokeball pokeball in trainer.Belt)
-            {
-                if (pokeball.IsOpen && pokeball.EnclosedPokemons.Count > 0)
-                {
-                    pokeball.Return();
-                    Console.WriteLine(pokeball.EnclosedPokemons[0].name + " goes back to Trainer " + trainer.Name + "'s Pokeball.");
-                    break;
-                }
-            }
-        }
-    }
-        public abstract class Pokemon
-    {
-        public string name;
-        public string strength;
-        public string weakness;
-
-        protected Pokemon(string name, string strength, string weakness)
-        {
-            this.name = name;
-            this.strength = strength;
-            this.weakness = weakness;
-        }
-
-        public abstract void BattleCry();
+        Name = name;
+        Strength = strength;
+        Weakness = weakness;
     }
 
-    public class Squirtle : Pokemon
-    {
-        public Squirtle(string name) : base(name, "Water", "Leaf")
-        {
-        }
+    public abstract void BattleCry();
+}
 
-        public override void BattleCry()
+public class Squirtle : Pokemon
+{
+    public Squirtle(string name) : base(name, "Water", "Grass")
+    {
+    }
+
+    public override void BattleCry()
+    {
+        Console.WriteLine(Name + "!!!");
+    }
+}
+
+public class Bulbasaur : Pokemon
+{
+    public Bulbasaur(string name) : base(name, "Grass", "Fire")
+    {
+    }
+
+    public override void BattleCry()
+    {
+        Console.WriteLine(Name + "!!!");
+    }
+}
+
+public class Charmander : Pokemon
+{
+    public Charmander(string name) : base(name, "Fire", "Water")
+    {
+    }
+
+    public override void BattleCry()
+    {
+        Console.WriteLine(Name + "!!!");
+    }
+}
+
+public class Pokeball
+{
+    public bool IsOpen;
+    public List<Pokemon> EnclosedPokemons;
+
+    public Pokeball()
+    {
+        EnclosedPokemons = new List<Pokemon>();
+    }
+
+    public void Throw()
+    {
+        if (!IsOpen && EnclosedPokemons.Count > 0)
         {
-            Console.WriteLine(name + "!!!");
+            Console.WriteLine("Pokeball is thrown!");
+            IsOpen = true;
+            ReleasePokemons();
+            EnclosedPokemons.Clear(); // Clear the enclosed Pokémon after releasing them
+            IsOpen = false; // Set IsOpen back to false after all Pokémon are released
+        }
+        else
+        {
+            Console.WriteLine("Pokeball is empty or already open.");
         }
     }
 
-    public class Bulbasaur : Pokemon
+    private void ReleasePokemons()
     {
-        public Bulbasaur(string name) : base(name, "Grass", "Fire")
+        foreach (Pokemon pokemon in EnclosedPokemons)
         {
-        }
-
-        public override void BattleCry()
-        {
-            Console.WriteLine(name + "!!!");
+            Console.WriteLine(pokemon.Name + ", I choose you!");
+            pokemon.BattleCry();
         }
     }
 
-    public class Charmander : Pokemon
+    public void Return()
     {
-        public Charmander(string name) : base(name, "Fire", "Water")
-        {
-        }
-
-        public override void BattleCry()
-        {
-            Console.WriteLine(name + "!!!");
-        }
-    }
-
-
-    public class Pokeball
-    {
-        public bool IsOpen;
-        public List<Pokemon> EnclosedPokemons;
-
-        public Pokeball()
-        {
-            EnclosedPokemons = new List<Pokemon>();
-        }
-
-        public void Throw()
-        {
-            if (!IsOpen && EnclosedPokemons.Count > 0)
-            {
-                Console.WriteLine("Pokeball is thrown!");
-                IsOpen = true;
-                ReleasePokemons();
-            }
-            else
-            {
-                Console.WriteLine("Pokeball is empty or already open.");
-            }
-        }
-
-        private void ReleasePokemons()
+        if (IsOpen && EnclosedPokemons.Count > 0)
         {
             foreach (Pokemon pokemon in EnclosedPokemons)
             {
-                Console.WriteLine(pokemon.name + ", I choose you!");
-                pokemon.BattleCry();
+                Console.WriteLine(pokemon.Name + ", come back!");
             }
+
+            EnclosedPokemons.Clear();
+            IsOpen = false;
         }
-
-        public void Return()
+        else
         {
-            if (IsOpen && EnclosedPokemons.Count > 0)
-            {
-                foreach (Pokemon pokemon in EnclosedPokemons)
-                {
-                    Console.WriteLine(pokemon.name + ", come back!");
-                }
-
-                EnclosedPokemons.Clear();
-                IsOpen = false;
-            }
-            else
-            {
-                Console.WriteLine("Pokeball is already closed or empty.");
-            }
-        }
-
-        public void EnclosePokemon(Pokemon pokemon)
-        {
-            if (!IsOpen)
-            {
-                EnclosedPokemons.Add(pokemon);
-            }
-            else
-            {
-                Console.WriteLine("Cannot enclose a Pokemon. Pokeball is already open.");
-            }
+            Console.WriteLine("Pokeball is already closed or empty.");
         }
     }
 
-    public class Trainer
+    public void EnclosePokemon(Pokemon pokemon)
     {
-        public string Name;
-        public List<Pokeball> Belt;
-
-        public Trainer(string name)
+        if (!IsOpen)
         {
-            Name = name;
-            Belt = new List<Pokeball>();
-            InitializeBeltWithPokemon();
+            EnclosedPokemons.Add(pokemon);
         }
-
-        private void InitializeBeltWithPokemon()
+        else
         {
-            for (int i = 0; i < 2; i++)
-            {
-                Squirtle squirtle = new Squirtle("Squirtle" + (i + 1));
-                Bulbasaur bulbasaur = new Bulbasaur("Bulbasaur" + (i + 1));
-                Charmander charmander = new Charmander("Charmander" + (i + 1));
-
-                Pokeball pokeball1 = new Pokeball();
-                pokeball1.EnclosePokemon(squirtle);
-                Belt.Add(pokeball1);
-
-                Pokeball pokeball2 = new Pokeball();
-                pokeball2.EnclosePokemon(bulbasaur);
-                Belt.Add(pokeball2);
-
-                Pokeball pokeball3 = new Pokeball();
-                pokeball3.EnclosePokemon(charmander);
-                Belt.Add(pokeball3);
-            }
+            Console.WriteLine("Cannot enclose a Pokemon. Pokeball is already open.");
         }
+    }
+}
 
-        public void ThrowPokeball(int index)
+public class Trainer
+{
+    public string Name;
+    public List<Pokeball> Belt;
+
+    public Trainer(string name)
+    {
+        Name = name;
+        Belt = new List<Pokeball>();
+        InitializeBeltWithPokemon();
+    }
+
+    private void InitializeBeltWithPokemon()
+    {
+        for (int i = 0; i < 2; i++)
         {
-            if (index < 0 || index >= Belt.Count)
-            {
-                Console.WriteLine("Ongeldige Pokeball-index.");
-                return;
-            }
+            Squirtle squirtle = new Squirtle("Squirtle" + (i + 1));
+            Bulbasaur bulbasaur = new Bulbasaur("Bulbasaur" + (i + 1));
+            Charmander charmander = new Charmander("Charmander" + (i + 1));
 
-            Pokeball pokeball = Belt[index];
-            if (!pokeball.IsOpen && pokeball.EnclosedPokemons != null)
+            Pokeball pokeball1 = new Pokeball();
+            pokeball1.EnclosePokemon(squirtle);
+            Belt.Add(pokeball1);
+
+            Pokeball pokeball2 = new Pokeball();
+            pokeball2.EnclosePokemon(bulbasaur);
+            Belt.Add(pokeball2);
+
+            Pokeball pokeball3 = new Pokeball();
+            pokeball3.EnclosePokemon(charmander);
+            Belt.Add(pokeball3);
+        }
+    }
+
+    public void ThrowPokeballs()
+    {
+        foreach (Pokeball pokeball in Belt)
+        {
+            if (pokeball.EnclosedPokemons.Count > 0)
             {
-                Console.WriteLine("Trainer " + Name + " gooit een pokeball!");
                 pokeball.Throw();
-                return;
             }
-
-            Console.WriteLine("De geselecteerde Pokeball kan niet worden gegooid.");
-        }
-        public bool ReturnPokemon()
-        {
-            bool anyPokemonReturned = false;
-
-            for (int i = Belt.Count - 1; i >= 0; i--)
-            {
-                Pokeball pokeball = Belt[i];
-
-                if (pokeball.IsOpen && pokeball.EnclosedPokemons.Count > 0)
-                {
-                    pokeball.Return();
-
-                    foreach (Pokemon pokemon in pokeball.EnclosedPokemons)
-                    {
-                        Console.WriteLine(pokemon.name + " goes back to Trainer " + Name + "'s pokeball.");
-                    }
-
-                    anyPokemonReturned = true;
-
-                    // Remove the returned Pokeball from the belt
-                    Belt.RemoveAt(i);
-                }
-            }
-
-            if (!anyPokemonReturned)
-            {
-                Console.WriteLine("There is no open pokeball to return.");
-            }
-
-            return anyPokemonReturned;
         }
     }
-        public class Program
+
+    public void ReturnPokeballs()
     {
-        public static void Main(string[] args)
+        foreach (Pokeball pokeball in Belt)
         {
-            bool replayGame = true;
+            pokeball.Return();
+        }
+    }
+}
 
-            while (replayGame)
+public class Battle
+{
+    private static int roundCounter;
+    private static int battleCounter;
+
+    private static void UpdateScoreboard()
+    {
+        roundCounter++;
+        battleCounter++;
+    }
+
+    public static void StartBattle(Trainer trainer1, Trainer trainer2)
+    {
+        Console.WriteLine("=== Battle Start ===");
+
+        roundCounter = 0;
+        battleCounter = 0;
+
+        Random random = new Random();
+
+        while (trainer1.Belt.Count > 0 && trainer2.Belt.Count > 0)
+        {
+            Console.WriteLine("=== Round " + (roundCounter + 1) + " ===");
+
+            int index1 = random.Next(trainer1.Belt.Count);
+            int index2 = random.Next(trainer2.Belt.Count);
+
+            Pokemon pokemon1 = trainer1.Belt[index1].EnclosedPokemons[0];
+            Pokemon pokemon2 = trainer2.Belt[index2].EnclosedPokemons[0];
+
+            Console.WriteLine(trainer1.Name + " throws a pokeball with " + pokemon1.Name);
+            Console.WriteLine(trainer2.Name + " throws a pokeball with " + pokemon2.Name);
+
+            if (pokemon1.Strength == pokemon2.Weakness)
             {
-                Console.WriteLine("Naam trainer 1:");
-                string nameTrainer1 = Console.ReadLine();
-                Trainer trainer1 = new Trainer(nameTrainer1);
-
-                Console.WriteLine("Naam trainer 2:");
-                string nameTrainer2 = Console.ReadLine();
-                Trainer trainer2 = new Trainer(nameTrainer2);
-
-                Console.WriteLine("Druk op Enter om het spel te starten...");
-                Console.ReadLine();
-
-                Battle battle = new Battle(trainer1, trainer2);
-
-                // Start het gevecht
-                battle.Start();
-            
-            /*bool gameRunning = true;
-            int i = 0;
-            while (gameRunning)
+                Console.WriteLine(pokemon1.Name + " wins!");
+                trainer2.Belt[index2].Return();
+                trainer2.Belt.RemoveAt(index2);
+            }
+            else if (pokemon2.Strength == pokemon1.Weakness)
             {
-                Console.WriteLine("===== Trainer 1 =====");
-                trainer1.ThrowPokeball(i);
-                Console.WriteLine();
-
-                Console.WriteLine("===== Trainer 2 =====");
-                trainer2.ThrowPokeball(i);
-                Console.WriteLine();
-
-                Console.WriteLine("Wil je doorgaan met het spel? (ja/nee)");
-                string continueResponse = Console.ReadLine();
-                if (continueResponse.ToLower() == "ja")
+                Console.WriteLine(pokemon2.Name + " wins!");
+                trainer1.Belt[index1].Return();
+                trainer1.Belt.RemoveAt(index1);
+            }
+            else
+            {
+                Console.WriteLine("It's a draw!");
+                if (roundCounter > 0)
                 {
-                    Console.WriteLine("===== Trainer 1 =====");
-                    trainer1.ReturnPokemon();
-                    Console.WriteLine();
-
-                    Console.WriteLine("===== Trainer 2 =====");
-                    trainer2.ReturnPokemon();
-                    Console.WriteLine();
+                    trainer1.Belt[index1].Return();
+                    trainer2.Belt[index2].Return();
                 }
                 else
                 {
-                    gameRunning = false;
-                }
-
-                Console.WriteLine("Wil je doorgaan met het spel? (ja/nee)");
-                continueResponse = Console.ReadLine();
-                if (continueResponse.ToLower() == "nee")
-                {
-                    gameRunning = false;
-                }
-                i++;
-            }*/
-
-            Console.WriteLine("Wil je het spel opnieuw spelen? (ja/nee)");
-                string replayResponse = Console.ReadLine();
-                if (replayResponse.ToLower() != "ja")
-                {
-                    replayGame = false;
+                    trainer1.Belt[index1].Return();
+                    trainer2.Belt[index2].Return();
+                    trainer1.Belt.RemoveAt(index1);
+                    trainer2.Belt.RemoveAt(index2);
                 }
             }
 
-            Console.WriteLine("Het spel is beëindigd.");
+            UpdateScoreboard();
+        }
+
+        if (trainer1.Belt.Count > trainer2.Belt.Count)
+        {
+            Console.WriteLine(trainer1.Name + " wins the battle!");
+        }
+        else if (trainer2.Belt.Count > trainer1.Belt.Count)
+        {
+            Console.WriteLine(trainer2.Name + " wins the battle!");
+        }
+        else
+        {
+            Console.WriteLine("It's a draw!");
+        }
+
+        Console.WriteLine("=== Battle End ===");
+    }
+}
+
+public class Arena
+{
+    private static int roundCounter;
+    private static int battleCounter;
+
+    public static void Main(string[] args)
+    {
+        Console.WriteLine("Naam trainer 1:");
+        string nameTrainer1 = Console.ReadLine();
+        Trainer trainer1 = new Trainer(nameTrainer1);
+
+        Console.WriteLine("Naam trainer 2:");
+        string nameTrainer2 = Console.ReadLine();
+        Trainer trainer2 = new Trainer(nameTrainer2);
+
+        StartArenaBattle(trainer1, trainer2);
+
+        Console.WriteLine("Total Battles: " + battleCounter);
+        Console.WriteLine("Total Rounds: " + roundCounter);
+    }
+
+    private static void UpdateScoreboard()
+    {
+        roundCounter++;
+        battleCounter++;
+    }
+
+    public static void StartArenaBattle(Trainer trainer1, Trainer trainer2)
+    {
+        Console.WriteLine("=== Arena Battle Start ===");
+
+        roundCounter = 0;
+        battleCounter = 0;
+
+        Console.WriteLine("Enter the number of battles:");
+        int numBattles = int.Parse(Console.ReadLine());
+
+        for (int i = 0; i < numBattles; i++)
+        {
+            Console.WriteLine("=== Battle " + (battleCounter + 1) + " ===");
+
+            Battle.StartBattle(trainer1, trainer2);
+
+            UpdateScoreboard();
+
+            Console.WriteLine("Press Enter to start the next battle...");
             Console.ReadLine();
         }
+
+        Console.WriteLine("=== Arena Battle End ===");
     }
 }
